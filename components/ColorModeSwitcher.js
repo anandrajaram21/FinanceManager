@@ -16,7 +16,7 @@ export const ColorModeSwitcher = (props) => {
       onClick={toggleColorMode}
       icon={<SwitchIcon />}
       size="md"
-      fontSize="lg"
+      fontSize="3xl"
     />
   );
 };
