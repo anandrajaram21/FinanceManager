@@ -5,7 +5,6 @@ import {
   Thead,
   Tr,
   Th,
-  Container,
   Tbody,
   Td,
   Tfoot,
@@ -16,6 +15,17 @@ import {
   FormErrorMessage,
   Button,
   Center,
+  Drawer,
+  DrawerBody,
+  Stack,
+  Box,
+  Text,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 import { FaTrashAlt } from "react-icons/fa";
@@ -23,9 +33,19 @@ import { FaTrashAlt } from "react-icons/fa";
 import { Formik } from "formik";
 
 function Transactions() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef();
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+
+  const calculateTotal = (transactions) => {
+    let totalAmount = 0;
+    transactions.forEach((transaction) => {
+      totalAmount += transaction.amount;
+    });
+    setTotal(totalAmount);
+  };
 
   const fetchData = () => {
     fetch("/api/transaction/list", {
@@ -35,13 +55,7 @@ function Transactions() {
       .then((data) => {
         setTransactions(data);
         setLoading(false);
-        console.log(data);
-        let totalAmount = 0;
-        data.forEach((transaction) => {
-          totalAmount += transaction.amount;
-        });
-        setTotal(totalAmount);
-        console.log(totalAmount);
+        calculateTotal(data);
       });
   };
 
@@ -61,6 +75,33 @@ function Transactions() {
   }, []);
   return (
     <>
+      <Center py={6}>
+        <Box
+          bg={() => {
+            if (total > 0) {
+              return "blue.400";
+            } else {
+              return "red";
+            }
+          }}
+          rounded={"md"}
+          overflow={"hidden"}
+        >
+          <Stack
+            textAlign={"center"}
+            p={6}
+            color={useColorModeValue("gray.800", "white")}
+            align={"center"}
+          >
+            <Text fontSize={"3xl"} fontWeight={800}>
+              Current Expenditure
+            </Text>
+            <Text fontSize={"4xl"} fontWeight={800}>
+              ${total}
+            </Text>
+          </Stack>
+        </Box>
+      </Center>
       {transactions.length > 0 ? (
         <Table marginX={"auto"} maxW={"2xl"} variant="simple">
           <TableCaption>Your Transactions</TableCaption>
@@ -104,79 +145,98 @@ function Transactions() {
           <Heading marginY={4}>No Transactions</Heading>
         </Center>
       )}
-      <Container marginY={5}>
-        <Formik
-          initialValues={{ description: "", amount: 0 }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.description) {
-              errors.description = "Required";
-            }
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Create a Transaction</DrawerHeader>
 
-            if (!values.amount) {
-              errors.amount = "Cannot be 0 or empty";
-            }
+          <DrawerBody>
+            <Formik
+              initialValues={{ description: "", amount: 0 }}
+              validate={(values) => {
+                const errors = {};
+                if (!values.description) {
+                  errors.description = "Required";
+                }
 
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            fetch("/api/transaction/new", {
-              method: "POST",
-              body: JSON.stringify(values),
-            }).then(() => {
-              setSubmitting(false);
-              fetchData();
-            });
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <FormControl
-                isInvalid={errors.description && touched.description}
-              >
-                <FormLabel htmlFor="description">Description</FormLabel>
-                <Input
-                  id="description"
-                  name="description"
-                  placeholder="Enter a description"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.description}
-                />
-                <FormErrorMessage>{errors.description}</FormErrorMessage>
-              </FormControl>
-              <FormControl
-                marginY={5}
-                isInvalid={errors.amount && touched.amount}
-              >
-                <FormLabel htmlFor="amount">Amount</FormLabel>
-                <Input
-                  id="amount"
-                  name="amount"
-                  type={"number"}
-                  placeholder="Enter an amount"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.amount}
-                />
-                <FormErrorMessage>{errors.amount}</FormErrorMessage>
-              </FormControl>
-              <Button marginY={3} type="submit" disabled={isSubmitting}>
-                Submit
-              </Button>
-            </form>
-          )}
-        </Formik>
-      </Container>
+                if (!values.amount) {
+                  errors.amount = "Cannot be 0 or empty";
+                }
+
+                return errors;
+              }}
+              onSubmit={(values, { setSubmitting }) => {
+                fetch("/api/transaction/new", {
+                  method: "POST",
+                  body: JSON.stringify(values),
+                }).then(() => {
+                  setSubmitting(false);
+                  fetchData();
+                });
+                onClose();
+              }}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                isSubmitting,
+                /* and other goodies */
+              }) => (
+                <form onSubmit={handleSubmit}>
+                  <FormControl
+                    isInvalid={errors.description && touched.description}
+                  >
+                    <FormLabel htmlFor="description">Description</FormLabel>
+                    <Input
+                      id="description"
+                      name="description"
+                      placeholder="Enter a description"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.description}
+                    />
+                    <FormErrorMessage>{errors.description}</FormErrorMessage>
+                  </FormControl>
+                  <FormControl
+                    marginY={5}
+                    isInvalid={errors.amount && touched.amount}
+                  >
+                    <FormLabel htmlFor="amount">Amount</FormLabel>
+                    <Input
+                      id="amount"
+                      name="amount"
+                      type={"number"}
+                      placeholder="Enter an amount"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.amount}
+                    />
+                    <FormErrorMessage>{errors.amount}</FormErrorMessage>
+                  </FormControl>
+                  <Button marginY={3} type="submit" disabled={isSubmitting}>
+                    Submit
+                  </Button>
+                </form>
+              )}
+            </Formik>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+      <Center marginY={5}>
+        <Button ref={btnRef} colorScheme="teal" onClick={onOpen}>
+          Create new Transaction
+        </Button>
+      </Center>
     </>
   );
 }
