@@ -1,34 +1,39 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Finance Manager
 
-## Getting Started
+This is a simple app to manage your finances. You can create new transactions, add descriptions for them, and delete transactions.
 
-First, run the development server:
+## Environment Variables
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+To run this project, you will need to add the following environment variables to your .env file (in the root of the project)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`DATABASE_URL` - A link to a PostgreSQL database (looks something like `postgres://`)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+`CLIENT_ID`
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+`CLIENT_SECRET`
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+You can generate an OAuth2.0 Client ID and Client Secret from the Google Cloud Console.
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- Add transactions.
+- Delete transactions.
+- Maintain a running total of what you have spent.
+- Light/dark mode toggle (light mode for those who want to burn their eyes)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- **Next.js** for the main frontend
+- **Next-Auth** to handle Google OAuth
+- **Prisma** to interact with the database
+- **Chakra UI** for styling
+- **PostgreSQL** as the main database (You can get a free fully managed PostgreSQL Database from Supabase)
+- **Vercel** as the hosting provider.
 
-## Deploy on Vercel
+## Screenshots
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![App Screenshot](https://i.imgur.com/B9JO1ve.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+![App Screenshot Not Stonks](https://i.imgur.com/14Go0DP.png)
+
+![I Hate My Eyes](https://i.imgur.com/Xkqdp3K.png)
