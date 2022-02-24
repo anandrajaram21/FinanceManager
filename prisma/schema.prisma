@@ -45,7 +45,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]
-  totalAmount   Int      @default(0)
 }
 
 model VerificationToken {
@@ -61,5 +60,6 @@ model Transaction {
   userId     String
   amount     Int
   description String?
+  date       DateTime @default(now())
   user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

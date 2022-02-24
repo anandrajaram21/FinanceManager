@@ -20,8 +20,74 @@ import {
 import { Formik } from "formik";
 
 function Transactions() {
+  const [transactions, setTransactions] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+
+  const fetchData = () => {
+    fetch("/api/transaction/list", {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setTransactions(data);
+        setLoading(false);
+        console.log(data);
+        let totalAmount = 0;
+        data.forEach((transaction) => {
+          totalAmount += transaction.amount;
+        });
+        setTotal(totalAmount);
+        console.log(totalAmount);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <Container marginY={5}>
+      <Table variant="simple">
+        <TableCaption>Your Transactions</TableCaption>
+        <Thead>
+          <Tr>
+            <Th>Description</Th>
+            <Th>Date</Th>
+            <Th isNumeric>Amount</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {/* <Tr>
+            <Td>inches</Td>
+            <Td>millimetres (mm)</Td>
+            <Td isNumeric>25.4</Td>
+          </Tr>
+          <Tr>
+            <Td>feet</Td>
+            <Td>centimetres (cm)</Td>
+            <Td isNumeric>30.48</Td>
+          </Tr>
+          <Tr>
+            <Td>yards</Td>
+            <Td>metres (m)</Td>
+            <Td isNumeric>0.91444</Td>
+          </Tr> */}
+          {transactions.map((transaction) => (
+            <Tr key={transaction.id}>
+              <Td>{transaction.description}</Td>
+              <Td>{transaction.date}</Td>
+              <Td isNumeric>{transaction.amount}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+        <Tfoot>
+          <Tr>
+            <Th>Description</Th>
+            <Th>Date</Th>
+            <Th isNumeric>Amount</Th>
+          </Tr>
+        </Tfoot>
+      </Table>
       <Formik
         initialValues={{ description: "", amount: 0 }}
         validate={(values) => {
@@ -37,11 +103,12 @@ function Transactions() {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log(values);
           fetch("/api/transaction/new", {
             method: "POST",
             body: JSON.stringify(values),
-          }).then(setSubmitting(false));
+          })
+            .then(setSubmitting(false))
+            .then(fetchData());
         }}
       >
         {({
@@ -89,40 +156,6 @@ function Transactions() {
           </form>
         )}
       </Formik>
-      {/* <Table variant="simple">
-        <TableCaption>Imperial to metric conversion factors</TableCaption>
-        <Thead>
-          <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td>inches</Td>
-            <Td>millimetres (mm)</Td>
-            <Td isNumeric>25.4</Td>
-          </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td isNumeric>30.48</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
-        </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
-          </Tr>
-        </Tfoot>
-      </Table> */}
     </Container>
   );
 }
