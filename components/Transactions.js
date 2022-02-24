@@ -74,7 +74,8 @@ function Transactions() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-  }, [fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!isLoading) {
     return (
@@ -91,12 +92,7 @@ function Transactions() {
             rounded={"md"}
             overflow={"hidden"}
           >
-            <Stack
-              textAlign={"center"}
-              p={6}
-              color={useColorModeValue("gray.800", "white")}
-              align={"center"}
-            >
+            <Stack textAlign={"center"} p={6} color="white" align={"center"}>
               <Text fontSize={"3xl"} fontWeight={800}>
                 Current Expenditure
               </Text>
