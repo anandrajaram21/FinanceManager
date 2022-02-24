@@ -9,6 +9,9 @@ export default async function handler(req, res) {
         email: session.user.email,
       },
     },
+    orderBy: {
+      date: "desc",
+    },
   });
   res.json(results);
 }
