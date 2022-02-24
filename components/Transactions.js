@@ -74,7 +74,7 @@ function Transactions() {
   useEffect(() => {
     setLoading(true);
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   if (!isLoading) {
     return (
